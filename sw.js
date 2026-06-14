@@ -1,0 +1,14 @@
+{
+  "name": "MedDoc — Pé & Tornozelo",
+  "short_name": "MedDoc",
+  "description": "App médico do Dr. Felipe Cunha Pessôa — pedidos e relatórios cirúrgicos",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0F6E56",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

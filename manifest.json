@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="MedDoc"/>
+<meta name="theme-color" content="#0F6E56"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<title>MedDoc — Pé &amp; Tornozelo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --green:#0F6E56;--green-light:#E1F5EE;--green-dark:#085041;
+  --bg:#F5F6F8;--surface:#ffffff;--border:#E4E6EA;
+  --text:#1A1D23;--muted:#6B7280;--hint:#9CA3AF;
+  --info-bg:#EFF6FF;--info:#1D4ED8;
+  --danger-bg:#FEF2F2;--danger:#DC2626;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+
+/* HEADER */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:36px;height:36px;border-radius:10px;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:600;color:var(--text);line-height:1.2}
+.logo-sub{font-size:11px;color:var(--muted)}
+.doctor-badge{text-align:right}
+.doctor-name{font-size:12px;font-weight:600;color:var(--text)}
+.doctor-crm{font-size:11px;color:var(--muted)}
+
+/* NAV */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;gap:2px;padding:8px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.tab{padding:7px 14px;border-radius:var(--radius-sm);border:none;font-size:13px;cursor:pointer;white-space:nowrap;color:var(--muted);background:transparent;display:flex;align-items:center;gap:6px;font-weight:500;transition:all 0.15s;flex-shrink:0}
+.tab.active{background:var(--green-light);color:var(--green)}
+.tab:hover:not(.active){background:var(--bg)}
+
+/* CONTENT */
+.content{padding:16px;max-width:680px;margin:0 auto;padding-bottom:40px}
+.section{display:none}
+.section.active{display:block}
+.section-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px}
+
+/* CARDS */
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:18px;margin-bottom:14px}
+.card-title{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:7px;text-transform:uppercase;letter-spacing:0.04em}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-row.full{grid-template-columns:1fr}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;font-weight:500;color:var(--muted)}
+.field input,.field select,.field textarea{
+  font-size:14px;padding:10px 12px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--bg);color:var(--text);
+  width:100%;-webkit-appearance:none;font-family:inherit;
+  transition:border 0.15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green);background:#fff}
+.field textarea{resize:vertical;min-height:80px;line-height:1.6}
+
+/* SEARCH */
+.search-wrap{position:relative}
+.search-wrap input{padding-right:36px}
+.search-icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:var(--hint);font-size:16px;pointer-events:none}
+.dropdown{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);max-height:200px;overflow-y:auto;position:absolute;width:100%;z-index:50;display:none;box-shadow:var(--shadow);margin-top:4px}
+.dropdown.open{display:block}
+.dd-item{padding:10px 14px;font-size:13px;cursor:pointer;color:var(--text);border-bottom:1px solid var(--border);transition:background 0.1s}
+.dd-item:last-child{border-bottom:none}
+.dd-item:hover{background:var(--bg)}
+.dd-item-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* TAGS */
+.tags-area{min-height:44px;border-radius:var(--radius-sm);border:1px solid var(--border);background:#fff;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:flex-start}
+.tag{display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green-dark);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:500}
+.tag button{background:none;border:none;cursor:pointer;color:var(--green);font-size:15px;line-height:1;padding:0;display:flex;align-items:center}
+
+/* BUTTONS */
+.btn-primary{background:var(--green);color:#fff;border:none;padding:12px 20px;border-radius:var(--radius-sm);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-weight:600;font-family:inherit;transition:background 0.15s;-webkit-appearance:none}
+.btn-primary:hover{background:var(--green-dark)}
+.btn-primary:active{transform:scale(0.98)}
+.btn-secondary{background:#fff;color:var(--text);border:1px solid var(--border);padding:12px 20px;border-radius:var(--radius-sm);font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-weight:500;-webkit-appearance:none}
+.btn-secondary:hover{background:var(--bg)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+
+/* OUTPUT */
+.output-wrap{margin-top:14px}
+.output-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.output-label{font-size:13px;font-weight:600;color:var(--text)}
+.output-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-size:13px;line-height:1.75;color:var(--text);white-space:pre-wrap;max-height:400px;overflow-y:auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+
+/* LOADING */
+.loading{display:flex;align-items:center;gap:10px;padding:16px;color:var(--muted);font-size:13px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.2s infinite}
+.dot:nth-child(2){animation-delay:0.2s}
+.dot:nth-child(3){animation-delay:0.4s}
+@keyframes pulse{0%,100%{opacity:0.2}50%{opacity:1}}
+
+/* HOME */
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:380px){.home-grid{grid-template-columns:1fr}}
+.home-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:18px;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;gap:10px}
+.home-card:hover{border-color:var(--green);transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,110,86,0.1)}
+.home-card:active{transform:scale(0.98)}
+.hc-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.hc-title{font-size:14px;font-weight:600;color:var(--text)}
+.hc-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* PROFILE */
+.avatar{width:56px;height:56px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;flex-shrink:0}
+.profile-header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.pf-name{font-size:17px;font-weight:700;color:var(--text)}
+.pf-sub{font-size:13px;color:var(--muted);margin-top:3px}
+.crm-badge{display:inline-block;margin-top:6px;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;background:var(--green-light);color:var(--green-dark)}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.fav-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);margin-bottom:8px}
+.fav-name{font-size:13px;font-weight:500;color:var(--text)}
+.fav-cod{font-size:11px;color:var(--muted);margin-top:2px}
+.fav-del{background:none;border:none;cursor:pointer;color:var(--hint);font-size:18px;padding:4px;display:flex;align-items:center}
+.fav-del:hover{color:var(--danger)}
+
+/* API KEY */
+.api-notice{background:var(--info-bg);border:1px solid #BFDBFE;border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;font-size:13px;color:var(--info);line-height:1.6}
+.api-notice strong{display:block;margin-bottom:4px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#1A1D23;color:#fff;padding:12px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;transition:transform 0.3s;z-index:999;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark"><i class="ti ti-activity-heartbeat" aria-hidden="true"></i></div>
+    <div>
+      <div class="logo-name">MedDoc</div>
+      <div class="logo-sub">Pé &amp; Tornozelo</div>
+    </div>
+  </div>
+  <div class="doctor-badge">
+    <div class="doctor-name">Dr. Felipe C. Pessôa</div>
+    <div class="doctor-crm">CRM DF 19457</div>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="tab active" onclick="goTab('home')"><i class="ti ti-home" aria-hidden="true"></i> Início</button>
+  <button class="tab" onclick="goTab('cirurgia')"><i class="ti ti-scalpel" aria-hidden="true"></i> Cirurgia</button>
+  <button class="tab" onclick="goTab('urgencia')"><i class="ti ti-urgent" aria-hidden="true"></i> Urgência</button>
+  <button class="tab" onclick="goTab('exame')"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Exame</button>
+  <button class="tab" onclick="goTab('perfil')"><i class="ti ti-user" aria-hidden="true"></i> Perfil</button>
+</nav>
+
+<div class="content">
+
+  <!-- HOME -->
+  <div class="section active" id="tab-home">
+    <div class="section-title" id="home-greeting">Olá, Dr. Felipe 👋</div>
+    <div class="home-grid">
+      <div class="home-card" onclick="goTab('cirurgia')">
+        <div class="hc-icon" style="background:#E1F5EE"><i class="ti ti-scalpel" style="color:#0F6E56;font-size:20px" aria-hidden="true"></i></div>
+        <div class="hc-title">Pedido de cirurgia</div>
+        <div class="hc-desc">CBHPM 2018 + CID-10, gerado por IA para convênio</div>
+      </div>
+      <div class="home-card" onclick="goTab('urgencia')">
+        <div class="hc-icon" style="background:#FAECE7"><i class="ti ti-urgent" style="color:#993C1D;font-size:20px" aria-hidden="true"></i></div>
+        <div class="hc-title">Relatório de urgência</div>
+        <div class="hc-desc">Relatório cirúrgico de urgência completo</div>
+      </div>
+      <div class="home-card" onclick="goTab('exame')">
+        <div class="hc-icon" style="background:#EFF6FF"><i class="ti ti-clipboard-list" style="color:#1D4ED8;font-size:20px" aria-hidden="true"></i></div>
+        <div class="hc-title">Pedido de exame</div>
+        <div class="hc-desc">Solicite exames com justificativa automática</div>
+      </div>
+      <div class="home-card" onclick="goTab('perfil')">
+        <div class="hc-icon" style="background:#F5F3FF"><i class="ti ti-user" style="color:#6D28D9;font-size:20px" aria-hidden="true"></i></div>
+        <div class="hc-title">Meu perfil</div>
+        <div class="hc-desc">Dados, favoritos e chave de API</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CIRURGIA -->
+  <div class="section" id="tab-cirurgia">
+    <div class="section-title">Pedido de cirurgia</div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user" aria-hidden="true"></i> Paciente</div>
+      <div class="form-row">
+        <div class="field"><label>Nome completo</label><input type="text" id="pac-nome" placeholder="Nome do paciente"/></div>
+        <div class="field"><label>Data de nascimento</label><input type="date" id="pac-nasc"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Convênio</label><select id="pac-convenio"><option>Unimed</option><option>Bradesco Saúde</option><option>Amil</option><option>SulAmérica</option><option>Hapvida</option><option>NotreDame Intermédica</option><option>Particular</option></select></div>
+        <div class="field"><label>Carteirinha / matrícula</label><input type="text" id="pac-carteirinha" placeholder="Nº da carteirinha"/></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-stethoscope" aria-hidden="true"></i> Diagnóstico — CID-10</div>
+      <div class="form-row full">
+        <div class="field" style="position:relative">
+          <label>Buscar diagnóstico</label>
+          <div class="search-wrap">
+            <input type="text" id="cid-search" placeholder="Ex: hallux, calcâneo, artrose…" oninput="searchDB(CID_DB,this.value,'cid-dd','cid-tags')"/>
+            <i class="ti ti-search search-icon" aria-hidden="true"></i>
+          </div>
+          <div class="dropdown" id="cid-dd"></div>
+        </div>
+      </div>
+      <div class="tags-area" id="cid-tags"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-scalpel" aria-hidden="true"></i> Procedimentos — CBHPM 2018</div>
+      <div class="form-row full">
+        <div class="field" style="position:relative">
+          <label>Buscar procedimento</label>
+          <div class="search-wrap">
+            <input type="text" id="proc-search" placeholder="Ex: artrodese, osteotomia…" oninput="searchDB(PROC_DB,this.value,'proc-dd','proc-tags')"/>
+            <i class="ti ti-search search-icon" aria-hidden="true"></i>
+          </div>
+          <div class="dropdown" id="proc-dd"></div>
+        </div>
+      </div>
+      <div class="tags-area" id="proc-tags"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-notes" aria-hidden="true"></i> Informações clínicas</div>
+      <div class="form-row full">
+        <div class="field"><label>Indicação cirúrgica</label><textarea id="cir-indicacao" placeholder="Histórico, sintomas, tratamentos anteriores…"></textarea></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Caráter</label><select id="cir-carater"><option>Eletivo</option><option>Urgência</option><option>Emergência</option></select></div>
+        <div class="field"><label>Via de acesso</label><select id="cir-via"><option>Aberta</option><option>Artroscópica</option><option>Minimamente invasiva</option><option>Percutânea</option></select></div>
+      </div>
+      <div class="form-row full">
+        <div class="field"><label>Material / implante necessário</label><input type="text" id="cir-material" placeholder="Ex: placa bloqueada 3.5mm, parafusos canulados…"/></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="gerar('cirurgia')"><i class="ti ti-sparkles" aria-hidden="true"></i> Gerar com IA</button>
+      <button class="btn-secondary" onclick="limpar('cirurgia')"><i class="ti ti-refresh" aria-hidden="true"></i> Limpar</button>
+    </div>
+    <div id="out-cirurgia"></div>
+  </div>
+
+  <!-- URGENCIA -->
+  <div class="section" id="tab-urgencia">
+    <div class="section-title">Relatório de urgência</div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user" aria-hidden="true"></i> Paciente</div>
+      <div class="form-row">
+        <div class="field"><label>Nome completo</label><input type="text" id="urg-nome" placeholder="Nome do paciente"/></div>
+        <div class="field"><label>Data de nascimento</label><input type="date" id="urg-nasc"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Convênio</label><select id="urg-convenio"><option>Unimed</option><option>Bradesco Saúde</option><option>Amil</option><option>SulAmérica</option><option>Hapvida</option><option>Particular</option></select></div>
+        <div class="field"><label>Data/hora do atendimento</label><input type="datetime-local" id="urg-data"/></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-urgent" aria-hidden="true"></i> Urgência</div>
+      <div class="form-row full">
+        <div class="field"><label>Mecanismo de trauma / queixa</label><textarea id="urg-trauma" placeholder="Descreva o mecanismo de trauma ou queixa principal…"></textarea></div>
+      </div>
+      <div class="form-row full">
+        <div class="field" style="position:relative">
+          <label>Diagnóstico CID-10</label>
+          <div class="search-wrap">
+            <input type="text" id="cid-urg" placeholder="Buscar CID…" oninput="searchDB(CID_DB,this.value,'dd-cid-urg','tags-cid-urg')"/>
+            <i class="ti ti-search search-icon" aria-hidden="true"></i>
+          </div>
+          <div class="dropdown" id="dd-cid-urg"></div>
+        </div>
+      </div>
+      <div class="tags-area" id="tags-cid-urg"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-scalpel" aria-hidden="true"></i> Procedimento realizado</div>
+      <div class="form-row full">
+        <div class="field" style="position:relative">
+          <label>Procedimento CBHPM</label>
+          <div class="search-wrap">
+            <input type="text" id="proc-urg" placeholder="Buscar procedimento…" oninput="searchDB(PROC_DB,this.value,'dd-proc-urg','tags-proc-urg')"/>
+            <i class="ti ti-search search-icon" aria-hidden="true"></i>
+          </div>
+          <div class="dropdown" id="dd-proc-urg"></div>
+        </div>
+      </div>
+      <div class="tags-area" id="tags-proc-urg"></div>
+      <div style="margin-top:12px">
+        <div class="form-row">
+          <div class="field"><label>Anestesia</label><select id="urg-anest"><option>Raquidiana</option><option>Geral</option><option>Bloqueio de nervo</option><option>Local</option><option>Sedação + local</option></select></div>
+          <div class="field"><label>Posição do paciente</label><select id="urg-posicao"><option>Decúbito dorsal</option><option>Decúbito ventral</option><option>Decúbito lateral</option></select></div>
+        </div>
+        <div class="form-row full">
+          <div class="field"><label>Descrição cirúrgica</label><textarea id="urg-descricao" placeholder="Tempos cirúrgicos, achados intraoperatórios, material utilizado…" style="min-height:100px"></textarea></div>
+        </div>
+        <div class="form-row full">
+          <div class="field"><label>Conduta pós-operatória</label><textarea id="urg-conduta" placeholder="Imobilização, medicações, orientações de alta…"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="gerar('urgencia')"><i class="ti ti-sparkles" aria-hidden="true"></i> Gerar relatório com IA</button>
+      <button class="btn-secondary" onclick="limpar('urgencia')"><i class="ti ti-refresh" aria-hidden="true"></i> Limpar</button>
+    </div>
+    <div id="out-urgencia"></div>
+  </div>
+
+  <!-- EXAME -->
+  <div class="section" id="tab-exame">
+    <div class="section-title">Pedido de exame</div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-user" aria-hidden="true"></i> Paciente</div>
+      <div class="form-row">
+        <div class="field"><label>Nome completo</label><input type="text" id="ex-nome" placeholder="Nome do paciente"/></div>
+        <div class="field"><label>Convênio</label><select id="ex-convenio"><option>Unimed</option><option>Bradesco Saúde</option><option>Amil</option><option>SulAmérica</option><option>Hapvida</option><option>Particular</option></select></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-clipboard-list" aria-hidden="true"></i> Exames solicitados</div>
+      <div class="form-row full">
+        <div class="field" style="position:relative">
+          <label>Buscar exame</label>
+          <div class="search-wrap">
+            <input type="text" id="exam-search" placeholder="Ex: RX, RM tornozelo, TC…" oninput="searchDB(EXAM_DB,this.value,'exam-dd','exam-tags')"/>
+            <i class="ti ti-search search-icon" aria-hidden="true"></i>
+          </div>
+          <div class="dropdown" id="exam-dd"></div>
+        </div>
+      </div>
+      <div class="tags-area" id="exam-tags"></div>
+      <div style="margin-top:12px">
+        <div class="form-row full">
+          <div class="field" style="position:relative">
+            <label>Hipótese diagnóstica CID-10</label>
+            <div class="search-wrap">
+              <input type="text" id="cid-ex" placeholder="Buscar CID…" oninput="searchDB(CID_DB,this.value,'dd-cid-ex','tags-cid-ex')"/>
+              <i class="ti ti-search search-icon" aria-hidden="true"></i>
+            </div>
+            <div class="dropdown" id="dd-cid-ex"></div>
+          </div>
+        </div>
+        <div class="tags-area" id="tags-cid-ex" style="margin-top:8px"></div>
+      </div>
+      <div style="margin-top:12px">
+        <div class="form-row full">
+          <div class="field"><label>Justificativa clínica (opcional)</label><textarea id="ex-justificativa" placeholder="Deixe em branco para a IA gerar automaticamente…"></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="gerar('exame')"><i class="ti ti-sparkles" aria-hidden="true"></i> Gerar pedido com IA</button>
+      <button class="btn-secondary" onclick="limpar('exame')"><i class="ti ti-refresh" aria-hidden="true"></i> Limpar</button>
+    </div>
+    <div id="out-exame"></div>
+  </div>
+
+  <!-- PERFIL -->
+  <div class="section" id="tab-perfil">
+    <div class="card">
+      <div class="profile-header">
+        <div class="avatar">FP</div>
+        <div>
+          <div class="pf-name">Dr. Felipe Cunha Pessôa</div>
+          <div class="pf-sub">Ortopedia · Pé e Tornozelo</div>
+          <div class="crm-badge">CRM DF 19457</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="form-row">
+        <div class="field"><label>Nome completo</label><input type="text" id="pf-nome" value="Felipe Cunha Pessôa"/></div>
+        <div class="field"><label>CRM</label><input type="text" id="pf-crm" value="DF 19457"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Especialidade</label><input type="text" id="pf-espec" value="Ortopedia e Traumatologia"/></div>
+        <div class="field"><label>Subespecialidade</label><input type="text" id="pf-sub" value="Pé e Tornozelo"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Hospital / clínica</label><input type="text" id="pf-hosp" placeholder="Ex: Hospital Regional de Taguatinga"/></div>
+        <div class="field"><label>Cidade / UF</label><input type="text" id="pf-cidade" value="Brasília, DF"/></div>
+      </div>
+      <div class="btn-row" style="margin-top:6px">
+        <button class="btn-primary" onclick="salvarPerfil()"><i class="ti ti-check" aria-hidden="true"></i> Salvar perfil</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-key" aria-hidden="true"></i> Chave de API (Anthropic)</div>
+      <div class="api-notice">
+        <strong>Como obter sua chave:</strong>
+        Acesse <strong>console.anthropic.com</strong> → API Keys → Create Key. Cole abaixo — fica salva só no seu navegador.
+      </div>
+      <div class="field">
+        <label>Chave de API</label>
+        <input type="password" id="api-key" placeholder="sk-ant-…"/>
+      </div>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="btn-primary" onclick="salvarKey()"><i class="ti ti-check" aria-hidden="true"></i> Salvar chave</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-star" aria-hidden="true"></i> Procedimentos favoritos</div>
+      <div id="favs-list"></div>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px">Os favoritos são adicionados automaticamente ao usar os módulos acima.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CID_DB = [
+  {cod:"M20.1",desc:"Hallux valgus (adquirido)"},
+  {cod:"M20.2",desc:"Hallux rigidus"},
+  {cod:"M20.3",desc:"Outras deformidades do hálux"},
+  {cod:"M77.3",desc:"Esporão do calcâneo"},
+  {cod:"M77.5",desc:"Fasciíte plantar"},
+  {cod:"S92.0",desc:"Fratura do calcâneo"},
+  {cod:"S92.1",desc:"Fratura do astrágalo"},
+  {cod:"S92.2",desc:"Fratura do escafoide do pé"},
+  {cod:"S92.3",desc:"Fratura do cuboide"},
+  {cod:"S92.4",desc:"Fratura de metatarso"},
+  {cod:"S92.5",desc:"Fratura de falange do pé"},
+  {cod:"M19.07",desc:"Artrose primária do tornozelo"},
+  {cod:"M19.17",desc:"Artrose pós-traumática do tornozelo"},
+  {cod:"S93.0",desc:"Luxação da articulação do tornozelo"},
+  {cod:"S93.4",desc:"Entorse do tornozelo"},
+  {cod:"M65.87",desc:"Tenossinovite do tornozelo"},
+  {cod:"M66.37",desc:"Ruptura espontânea do tendão de Aquiles"},
+  {cod:"S86.0",desc:"Lesão do tendão de Aquiles"},
+  {cod:"M21.6",desc:"Pé plano adquirido"},
+  {cod:"Q66.0",desc:"Pé torto equinovaro"},
+  {cod:"M87.07",desc:"Necrose avascular do astrágalo"},
+  {cod:"G57.5",desc:"Síndrome do túnel do tarso"},
+  {cod:"M72.2",desc:"Fibromatose plantar"},
+  {cod:"M21.4",desc:"Pé cavo"},
+  {cod:"M20.4",desc:"Outros dedos em martelo"},
+  {cod:"S93.1",desc:"Luxação metatarsofalângica"},
+];
+
+const PROC_DB = [
+  {cod:"31201017",desc:"Correção de hallux valgus — osteotomia"},
+  {cod:"31201025",desc:"Osteotomia do calcâneo"},
+  {cod:"31201033",desc:"Artrodese articulação metatarsofalângica"},
+  {cod:"31201041",desc:"Artrodese tíbio-talar"},
+  {cod:"31201050",desc:"Artrodese talonavicular"},
+  {cod:"31201068",desc:"Artrodese subtalar"},
+  {cod:"31201076",desc:"Artrodese tripla"},
+  {cod:"31201084",desc:"Osteotomia de metatarso — percutânea"},
+  {cod:"31201092",desc:"Tratamento cirúrgico fratura do calcâneo"},
+  {cod:"31201106",desc:"Tratamento cirúrgico fratura do astrágalo"},
+  {cod:"31201114",desc:"Tratamento cirúrgico fratura de metatarso"},
+  {cod:"31201122",desc:"Reconstrução ligamentar do tornozelo"},
+  {cod:"31201130",desc:"Reparo do tendão de Aquiles — sutura primária"},
+  {cod:"31201149",desc:"Reparo do tendão de Aquiles — com reforço"},
+  {cod:"31201157",desc:"Liberação do túnel do tarso"},
+  {cod:"31201165",desc:"Fasciotomia plantar"},
+  {cod:"31201173",desc:"Ressecção de esporão do calcâneo"},
+  {cod:"31201181",desc:"Artroscopia do tornozelo — diagnóstica"},
+  {cod:"31201190",desc:"Artroscopia do tornozelo — com procedimento"},
+  {cod:"31201203",desc:"Tenossinovectomia do tornozelo"},
+  {cod:"31201211",desc:"Alongamento do tendão de Aquiles"},
+  {cod:"31201220",desc:"Correção de dedo em martelo"},
+  {cod:"31201238",desc:"Liberação de fáscia plantar — endoscópica"},
+  {cod:"40801020",desc:"Amputação transmetatarsiana"},
+];
+
+const EXAM_DB = [
+  {cod:"40901013",desc:"Radiografia do pé — AP e perfil"},
+  {cod:"40901021",desc:"Radiografia do tornozelo — AP, perfil e oblíqua"},
+  {cod:"40901030",desc:"Radiografia em carga bilateral dos pés"},
+  {cod:"40906017",desc:"Ressonância magnética do tornozelo"},
+  {cod:"40906025",desc:"Ressonância magnética do pé"},
+  {cod:"40905012",desc:"Tomografia computadorizada do tornozelo"},
+  {cod:"40905020",desc:"Tomografia computadorizada do pé"},
+  {cod:"40301234",desc:"Cintilografia óssea"},
+  {cod:"40801056",desc:"Densitometria óssea"},
+  {cod:"40302056",desc:"Eletroneuromiografia membros inferiores"},
+  {cod:"40201010",desc:"Hemograma completo"},
+  {cod:"40202040",desc:"Proteína C-reativa (PCR)"},
+  {cod:"40202088",desc:"VHS (velocidade de hemossedimentação)"},
+  {cod:"40901056",desc:"Radiografia simples — coluna lombar"},
+  {cod:"40906033",desc:"Ressonância magnética — coluna lombar"},
+];
+
+// --- UTILS ---
+function $(id){ return document.getElementById(id) }
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// Greeting
+(function(){
+  const h = new Date().getHours();
+  const g = h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  $('home-greeting').textContent = g+', Dr. Felipe 👋';
+})();
+
+// Tab navigation
+function goTab(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ids=['home','cirurgia','urgencia','exame','perfil'];
+    t.classList.toggle('active',ids[i]===id);
+  });
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  $('tab-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// Search
+function searchDB(db,q,ddId,tagsId){
+  const dd=$(ddId);
+  if(!q||q.length<2){dd.classList.remove('open');return;}
+  const r=db.filter(i=>i.desc.toLowerCase().includes(q.toLowerCase())||i.cod.includes(q)).slice(0,8);
+  if(!r.length){dd.classList.remove('open');return;}
+  dd.innerHTML=r.map(i=>`<div class="dd-item" data-cod="${i.cod}" data-desc="${i.desc}"><div>${i.cod}</div><div class="dd-item-sub">${i.desc}</div></div>`).join('');
+  dd.classList.add('open');
+  dd.querySelectorAll('.dd-item').forEach(el=>{
+    el.onclick=()=>{ addTag(tagsId,el.dataset.cod,el.dataset.desc); dd.classList.remove('open'); };
+  });
+}
+
+function addTag(tagsId,cod,desc){
+  const wrap=$(tagsId);
+  if(wrap.querySelector(`[data-cod="${cod}"]`)) return;
+  const t=document.createElement('span');
+  t.className='tag'; t.dataset.cod=cod;
+  t.innerHTML=`<strong>${cod}</strong>&nbsp;${desc}<button onclick="this.parentElement.remove()" aria-label="Remover">×</button>`;
+  wrap.appendChild(t);
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-wrap')&&!e.target.closest('.dropdown'))
+    document.querySelectorAll('.dropdown').forEach(d=>d.classList.remove('open'));
+});
+
+function getTags(id){
+  return Array.from(document.querySelectorAll(`#${id} .tag`)).map(t=>`${t.dataset.cod} — ${t.querySelector('strong').nextSibling.textContent.trim()}`);
+}
+
+// API Key
+function getKey(){
+  return localStorage.getItem('meddoc_apikey')||'';
+}
+function salvarKey(){
+  const k=$('api-key').value.trim();
+  if(!k){toast('Cole a chave antes de salvar');return;}
+  localStorage.setItem('meddoc_apikey',k);
+  toast('Chave salva com segurança ✓');
+}
+window.addEventListener('load',()=>{
+  const k=getKey();
+  if(k) $('api-key').value=k;
+  renderFavs();
+});
+
+// Perfil
+function salvarPerfil(){
+  toast('Perfil salvo ✓');
+}
+
+// Favoritos
+function getFavs(){ try{return JSON.parse(localStorage.getItem('meddoc_favs')||'[]')}catch{return[]} }
+function saveFavs(f){ localStorage.setItem('meddoc_favs',JSON.stringify(f)) }
+function renderFavs(){
+  const favs=getFavs();
+  const el=$('favs-list');
+  if(!favs.length){el.innerHTML='<p style="font-size:13px;color:var(--muted)">Nenhum favorito ainda.</p>';return;}
+  el.innerHTML=favs.map((f,i)=>`<div class="fav-item"><div><div class="fav-name">${f.desc}</div><div class="fav-cod">${f.cod}</div></div><button class="fav-del" onclick="removeFav(${i})" aria-label="Remover"><i class="ti ti-trash" aria-hidden="true"></i></button></div>`).join('');
+}
+function removeFav(i){ const f=getFavs(); f.splice(i,1); saveFavs(f); renderFavs(); }
+
+// Gerar documento
+async function gerar(tipo){
+  const key=getKey();
+  if(!key){ toast('Adicione sua chave de API no Perfil'); goTab('perfil'); return; }
+
+  const medico='Dr. Felipe Cunha Pessôa, CRM DF 19457, Especialista em Ortopedia e Traumatologia — Pé e Tornozelo, Brasília-DF';
+  let prompt='';
+
+  if(tipo==='cirurgia'){
+    const nome=$('pac-nome').value||'(não informado)';
+    const nasc=$('pac-nasc').value;
+    const conv=$('pac-convenio').value;
+    const cart=$('pac-carteirinha').value;
+    const cids=getTags('cid-tags').join('; ')||'(não informado)';
+    const procs=getTags('proc-tags').join('; ')||'(não informado)';
+    const indic=$('cir-indicacao').value||'(não informado)';
+    const carat=$('cir-carater').value;
+    const via=$('cir-via').value;
+    const mat=$('cir-material').value;
+    prompt=`Gere um pedido de autorização de cirurgia formal e completo para convênio médico, em português brasileiro.
+
+Médico solicitante: ${medico}
+Paciente: ${nome}${nasc?` | Nasc: ${nasc}`:''}
+Convênio: ${conv}${cart?` | Carteirinha: ${cart}`:''}
+Diagnóstico (CID-10): ${cids}
+Procedimentos (CBHPM 2018): ${procs}
+Caráter: ${carat} | Via: ${via}
+Indicação clínica: ${indic}
+Material/implante: ${mat||'não especificado'}
+
+Formate como documento médico oficial: cabeçalho completo, dados do paciente, diagnóstico com CID, procedimentos com códigos CBHPM, indicação clínica detalhada, local/data e assinatura do médico. Tom formal, linguagem técnica.`;
+  } else if(tipo==='urgencia'){
+    const nome=$('urg-nome').value||'(não informado)';
+    const conv=$('urg-convenio').value;
+    const dt=$('urg-data').value;
+    const trauma=$('urg-trauma').value||'(não informado)';
+    const cids=getTags('tags-cid-urg').join('; ')||'(não informado)';
+    const procs=getTags('tags-proc-urg').join('; ')||'(não informado)';
+    const anest=$('urg-anest').value;
+    const pos=$('urg-posicao').value;
+    const desc=$('urg-descricao').value||'(não informado)';
+    const conduta=$('urg-conduta').value;
+    prompt=`Gere um relatório de cirurgia de urgência formal e completo para convênio médico, em português brasileiro.
+
+Médico responsável: ${medico}
+Paciente: ${nome} | Convênio: ${conv}${dt?` | Atendimento: ${dt}`:''}
+Diagnóstico (CID-10): ${cids}
+Mecanismo / queixa: ${trauma}
+Procedimento realizado (CBHPM): ${procs}
+Anestesia: ${anest} | Posição: ${pos}
+Descrição cirúrgica: ${desc}
+Conduta pós-operatória: ${conduta||'a definir'}
+
+Formate como relatório cirúrgico oficial com todos os campos padrão exigidos por convênios. Tom formal, linguagem técnica cirúrgica.`;
+  } else {
+    const nome=$('ex-nome').value||'(não informado)';
+    const conv=$('ex-convenio').value;
+    const exames=getTags('exam-tags').join('; ')||'(não informado)';
+    const cids=getTags('tags-cid-ex').join('; ')||'(não informado)';
+    const justif=$('ex-justificativa').value;
+    prompt=`Gere um pedido de exames médicos formal e completo para convênio, em português brasileiro.
+
+Médico solicitante: ${medico}
+Paciente: ${nome} | Convênio: ${conv}
+Exames solicitados (com códigos): ${exames}
+Hipótese diagnóstica (CID-10): ${cids}
+Justificativa clínica: ${justif||'(gerar automaticamente com base nos dados fornecidos, com linguagem adequada para aprovação pelo convênio)'}
+
+Formate como solicitação médica oficial com cabeçalho, dados do paciente, lista de exames com códigos, justificativa clínica detalhada, data e assinatura.`;
+  }
+
+  const outId='out-'+tipo;
+  $(outId).innerHTML=`<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Gerando documento com IA…</span></div>`;
+
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    if(data.error){$(outId).innerHTML=`<div class="output-box">Erro: ${data.error.message}</div>`;return;}
+    const txt=data.content?.map(i=>i.text||'').join('\n')||'Erro ao gerar.';
+    $(outId).innerHTML=`<div class="output-wrap"><div class="output-header"><span class="output-label">Documento gerado</span><button class="btn-secondary" style="padding:8px 14px;font-size:12px" onclick="copiar('doc-${tipo}')"><i class='ti ti-copy' aria-hidden='true'></i> Copiar</button></div><div class="output-box" id="doc-${tipo}">${txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div></div>`;
+  } catch(e){
+    $(outId).innerHTML=`<div class="output-box">Erro de conexão. Verifique sua chave de API e tente novamente.</div>`;
+  }
+}
+
+function copiar(id){
+  const txt=$(id)?.innerText||'';
+  navigator.clipboard.writeText(txt).then(()=>toast('Copiado ✓'));
+}
+
+function limpar(tipo){
+  const campos={
+    cirurgia:['pac-nome','pac-carteirinha','cir-indicacao','cir-material'],
+    urgencia:['urg-nome','urg-trauma','urg-descricao','urg-conduta'],
+    exame:['ex-nome','ex-justificativa']
+  };
+  (campos[tipo]||[]).forEach(id=>{const el=$(id);if(el)el.value='';});
+  const tagAreas={
+    cirurgia:['cid-tags','proc-tags'],
+    urgencia:['tags-cid-urg','tags-proc-urg'],
+    exame:['exam-tags','tags-cid-ex']
+  };
+  (tagAreas[tipo]||[]).forEach(id=>{const el=$(id);if(el)el.innerHTML='';});
+  $('out-'+tipo).innerHTML='';
+}
+
+// Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
