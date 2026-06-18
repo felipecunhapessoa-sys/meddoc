@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.json"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
 <title>MedDoc — Pé &amp; Tornozelo</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -592,8 +592,6 @@ function removeFav(i){ const f=getFavs(); f.splice(i,1); saveFavs(f); renderFavs
 
 // Gerar documento
 async function gerar(tipo){
-  const key=getKey();
-  if(!key){ toast('Adicione sua chave de API no Perfil'); goTab('perfil'); return; }
 
   const medico='Dr. Felipe Cunha Pessôa, CRM DF 19457, Especialista em Ortopedia e Traumatologia — Pé e Tornozelo, Brasília-DF';
   let prompt='';
@@ -665,17 +663,17 @@ Formate como solicitação médica oficial com cabeçalho, dados do paciente, li
   $(outId).innerHTML=`<div class="loading"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>Gerando documento com IA…</span></div>`;
 
   try {
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
+    const res=await fetch('/api/gerar',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})
     });
     const data=await res.json();
-    if(data.error){$(outId).innerHTML=`<div class="output-box">Erro: ${data.error.message}</div>`;return;}
-    const txt=data.content?.map(i=>i.text||'').join('\n')||'Erro ao gerar.';
+    if(data.error){$(outId).innerHTML=`<div class="output-box">Erro: ${data.error}</div>`;return;}
+    const txt=data.text||'Erro ao gerar.';
     $(outId).innerHTML=`<div class="output-wrap"><div class="output-header"><span class="output-label">Documento gerado</span><button class="btn-secondary" style="padding:8px 14px;font-size:12px" onclick="copiar('doc-${tipo}')"><i class='ti ti-copy' aria-hidden='true'></i> Copiar</button></div><div class="output-box" id="doc-${tipo}">${txt.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div></div>`;
   } catch(e){
-    $(outId).innerHTML=`<div class="output-box">Erro de conexão. Verifique sua chave de API e tente novamente.</div>`;
+    $(outId).innerHTML=`<div class="output-box">Erro de conexão. Tente novamente.</div>`;
   }
 }
 
